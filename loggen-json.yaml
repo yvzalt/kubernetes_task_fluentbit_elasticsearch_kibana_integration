@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: loggen-json
+  namespace: logging
+  labels: { app: loggen, type: json }
+spec:
+  restartPolicy: Always
+  containers:
+    - name: loggen
+      image: busybox
+      command: ["/bin/sh","-c"]
+      args:
+        - i=0; while true; do
+            echo "{\"ts\":\"$(date -Iseconds)\",\"level\":\"info\",\"msg\":\"hello $i\",\"k\":\"v\"}";
+            echo "{\"ts\":\"$(date -Iseconds)\",\"level\":\"error\",\"msg\":\"boom $i\",\"code\":500}";
+            i=$((i+1)); sleep 1;
+          done
+      resources:
+        requests: { cpu: "10m", memory: "16Mi" }

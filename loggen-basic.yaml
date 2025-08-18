@@ -1,0 +1,29 @@
+
+---
+
+## Logging containers (Kubernetes manifests)
+
+> These use standard images (no Docker build). Apply as-is. All resources go to `logging` namespace.
+
+### `tests/loggen-basic.yaml`
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: loggen-basic
+  namespace: logging
+  labels: { app: loggen, type: basic }
+spec:
+  restartPolicy: Always
+  containers:
+    - name: loggen
+      image: busybox
+      command: ["/bin/sh","-c"]
+      args:
+        - i=0; while true; do
+            echo "$(date -Iseconds) INFO test log $i";
+            echo "$(date -Iseconds) ERROR test error $i";
+            i=$((i+1)); sleep 1;
+          done
+      resources:
+        requests: { cpu: "10m", memory: "16Mi" }

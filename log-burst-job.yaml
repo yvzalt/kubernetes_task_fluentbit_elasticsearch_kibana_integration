@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: log-burst
+  namespace: logging
+  labels: { app: loggen, type: burst }
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: burst
+          image: busybox
+          command: ["/bin/sh","-c"]
+          args:
+            - for i in $(seq 1 50000); do
+                echo "$(date -Iseconds) INFO burst $i";
+              done; sleep 3
+      resources:
+        requests: { cpu: "50m", memory: "32Mi" }
+  backoffLimit: 0

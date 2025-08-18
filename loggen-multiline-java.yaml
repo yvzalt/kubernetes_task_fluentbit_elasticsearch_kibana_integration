@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: loggen-multiline-java
+  namespace: logging
+  labels: { app: loggen, type: multiline-java }
+spec:
+  restartPolicy: Always
+  containers:
+    - name: loggen
+      image: busybox
+      command: ["/bin/sh","-c"]
+      args: 
+        - |
+          while true; do
+            echo "$(date -Iseconds) ERROR java.lang.RuntimeException: Simulated failure";
+            echo "    at com.example.App.main(App.java:12)";
+            echo "Caused by: java.lang.IllegalStateException: bad state";
+            echo "    at com.example.Other.go(Other.java:99)";
+            sleep 5;
+          done
+      resources:
+        requests: { cpu: "10m", memory: "16Mi" }
