@@ -29,17 +29,20 @@ It **does** include several **log generator** pods to test your pipeline end-to-
 3. **Configure Fluent Bit**
    - Parsers: `docker`/`cri`, JSON; enable a multiline parser (e.g., Java)
    - Optional: redact secrets; reduce noise with grep/modify filters
-   - Output: Elasticsearch (index or data stream), retry policy, TLS/auth (prod)
+   - Output: retry policy, TLS/auth (prod)
 
 4. **Setup Elasticsearch**
-   - Single-node for dev; StatefulSet + PVCs
-   - Decide index strategy: **data streams** (preferred) or daily indices
+   - Single-node for dev
+   - StatefulSet + PVCs (optional)
+   - Decide index strategy: **data streams** (preferred) or daily indices (optional )
    - Add ILM: hot rollover + timed delete (dev example: keep 14 days)
 
 5. **Integrate Fluent Bit → Elasticsearch**
    - Point FB `es` output at the ES service (cluster DNS)
+   - Elasticsearch (index or data stream)
    - Choose index prefix (e.g., `kubernetes-logs`) or a data stream name
    - Verify with `_cat/indices`, `_search`, or `_data_stream`
+
 
 6. **Test Integration**
    - Use the log generators (INFO/ERROR, JSON, multiline) and confirm ingestion
@@ -63,6 +66,8 @@ It **does** include several **log generator** pods to test your pipeline end-to-
 11. **End-to-End Test**
    - Restart a pod; confirm timelines align in Kibana
 
+12. **Check-Optional-Steps**
+   - consider doing the optional steps
 ---
 
 ## Acceptance Criteria (suggested)
@@ -75,10 +80,10 @@ It **does** include several **log generator** pods to test your pipeline end-to-
 
 ---
 
-## Design Guardrails & Tips
+## Design Guardrails & Tips (optional for better system)
 
-- **Paths**: containerd vs Docker paths differ—verify your nodes
-- **Security**: run FB as non-root, read-only root FS; use NetworkPolicies; TLS + creds in prod
+- **Paths**: containerd vs Docker paths differ—verify your nodes(we will be using containerd)
+- **Security**: run FB as non-root, read-only root FS; use NetworkPolicies; TLS + creds
 - **Buffers**: `storage.type filesystem` in FB for bursty workloads
 - **ES Sizing**: start small—1 shard, 0–1 replica; JVM heap ~50% of container memory (≤ 32 GB)
 - **Retention**: set ILM early; avoid runaway disk usage
@@ -98,9 +103,6 @@ It **does** include several **log generator** pods to test your pipeline end-to-
 
 ---
 
-## Quickstart (tests only)
-
-```bash
 # Namespace for the stack and tests
 kubectl create ns logging || true
 
