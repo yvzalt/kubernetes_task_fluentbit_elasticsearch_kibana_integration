@@ -16,6 +16,8 @@ spec:
     spec:
       containers:
       - name: fluent-bit
+        securityContext:
+          privileged: true
         image: fluent/fluent-bit:latest
         resources:
           limits:
@@ -24,9 +26,17 @@ spec:
             cpu: "100m"
             memory: "128Mi"
         volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
         - name: fluentbit-config
-          mountPath: /fluent-bit/etc
+          mountPath: /etc/fluent-bit
+          readOnly: true # Config dosyalarını salt okunur yapın
+
       volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
       - name: fluentbit-config
         configMap:
-          name: fluent-bit-config
+          name: fluent-bit-config-properties

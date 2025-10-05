@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-nodes
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  serviceName: "elasticsearch-discovery"
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: elasticsearch
+        image: elasticsearch:8.13.0
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "512Mi"
+        env:
+        - name: cluster.name
+          value: elastic-cluster
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+          
+        - name: discovery.seed_hosts
+          value: "elasticsearch-discovery"
+        - name: cluster.initial_master_nodes
+          value: "es-nodes-0" 
+        - name: xpack.security.enabled
+          value: "false" 
+          
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: transport
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        securityContext:
+          capabilities:
+            add: ["IPC_LOCK","SYS_RESOURCE"] 
+          fsGroup: 1000 
+          runAsUser: 1000
+          
+      volumes:
+      - name: data
+        emptyDir: {} 

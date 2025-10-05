@@ -3,10 +3,9 @@
 
 ## Logging containers (Kubernetes manifests)
 
-> These use standard images (no Docker build). Apply as-is. All resources go to `logging` namespace.
 
 ### `tests/loggen-basic.yaml`
-```yaml
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -27,3 +26,12 @@ spec:
           done
       resources:
         requests: { cpu: "10m", memory: "16Mi" }
+        limits: { cpu: "10m", memory: "16Mi" }
+      volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
+  volumes:
+    - name: varlog
+      hostPath:
+       path: /var/log
