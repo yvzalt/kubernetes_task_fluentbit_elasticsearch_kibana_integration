@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: kibana
-        image: kibana:8.13.0 # Elasticsearch ile aynı major sürümde olmalı
+        image: kibana:8.13.0
         resources:
           limits:
             cpu: "500m"
@@ -26,9 +26,8 @@ spec:
             cpu: "100m"
             memory: "512Mi"
         env:
-          # Elasticsearch servisinizin adını kullanın (Adım 1A)
         - name: ELASTICSEARCH_HOSTS
-          value: "http://elasticsearch-service.logging.svc.cluster.local:9200"
+          value: "http://elasticsearch-client.logging.svc.cluster.local:9200"
         ports:
         - containerPort: 5601
         livenessProbe:

@@ -9,7 +9,7 @@ data:
         # Hizmet ayarları
         Flush        1
         Log_Level    info
-        Daemon       off
+        Daemon       on
         Parsers_File parsers.conf # Parsers dosyasını dahil et
       [INPUT]
         Name              tail
