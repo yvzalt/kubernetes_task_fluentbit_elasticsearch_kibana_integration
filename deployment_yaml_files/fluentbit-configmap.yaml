@@ -8,13 +8,14 @@ data:
       [SERVICE]
         # Hizmet ayarları
         Flush        1
-        Log_Level    info
-        Daemon       on
-        Parsers_File parsers.conf # Parsers dosyasını dahil et
+        Log_Level    debug
+        Daemon       off
+        Parsers_File parsers.conf
       [INPUT]
         Name              tail
         Tag               kube.*
         Path              /var/log/containers/*.log
+        DB                /tmp/flb_kube.db
       [OUTPUT]
         Name  stdout
         Match *
